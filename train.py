@@ -1,59 +1,38 @@
-# import the libraries as shown below
-
-from keras.layers import Input, Lambda, Dense, Flatten
-from keras.models import Model
-#from keras.applications.resnet50 import ResNet50
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg16 import preprocess_input
-from keras.preprocessing import image
-from keras.preprocessing.image import ImageDataGenerator
+import keras,os
 from keras.models import Sequential
+from keras.layers import Dense, Conv2D, MaxPool2D , Flatten
+from keras.layers.core import Flatten, Dense, Dropout
+from keras.layers.convolutional import Convolution2D, MaxPooling2D, ZeroPadding2D
+from keras.preprocessing.image import ImageDataGenerator
 import numpy as np
+from keras.optimizers import Adam
 from glob import glob
 import matplotlib.pyplot as plt
-from keras.preprocessing.image import ImageDataGenerator
-import tensorflow as tf
-from keras.models import load_model
-
-IMAGE_SIZE = [224, 224]
 
 train_path = 'Datasets/train'
 valid_path = 'Datasets/test'
-
-
-# Import the Vgg 16 library as shown below and add preprocessing layer to the front of VGG
-# Here we will be using imagenet weights
-
-vgg = VGG16(input_shape=IMAGE_SIZE + [3], weights='imagenet', include_top=False)
-
-
-# don't train existing weights
-for layer in vgg.layers:
-    layer.trainable = False
-
-# useful for getting number of output classes
 folders = glob('Datasets/train/*')
 
-# our layers - you can add more if you want
-x = Flatten()(vgg.output)
+model = Sequential()
+model.add(Conv2D(32, (3, 3), activation="relu", input_shape=(224, 224, 3)))
+model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(Conv2D(32, (3, 3), activation="relu", input_shape=(224, 224, 3)))
+model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(Conv2D(32, (3, 3), activation="relu", input_shape=(224, 224, 3)))
+model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(Conv2D(64, (3, 3), activation="relu", input_shape=(224, 224, 3)))
+model.add(MaxPooling2D(pool_size = (2, 2)))
+model.add(Conv2D(64, (3, 3), activation="relu", input_shape=(224, 224, 3)))
+model.add(MaxPooling2D(pool_size = (2, 2)))
 
-prediction = Dense(len(folders), activation='softmax')(x)
+model.add(Flatten())
+model.add(Dense(units=4096,activation="relu"))
+model.add(Dense(units=4096,activation="relu"))
+model.add(Dense(units=len(folders), activation="softmax"))
 
-# create a model object
-model = Model(inputs=vgg.input, outputs=prediction)
-
-
-# view the structure of the model
+opt = Adam(lr=0.001)
+model.compile(optimizer=opt, loss = 'categorical_crossentropy', metrics=['accuracy'])
 model.summary()
-
-
-# tell the model what cost and optimization method to use
-model.compile(
-  loss='categorical_crossentropy',
-  optimizer='adam',
-  metrics=['accuracy']
-)
-
 
 # Use the Image Data Generator to import the images from the dataset
 
@@ -78,6 +57,13 @@ test_set = test_datagen.flow_from_directory('Datasets/test',
 
 # fit the model
 # Run the cell. It will take some time to execute
+# history = model_3_hidden.fit(
+#   training_set,
+#   validation_data=test_set,
+#   epochs=5,
+#   steps_per_epoch=500,
+#   validation_steps=500
+# )
 r = model.fit(
   training_set,
   validation_data=test_set,
@@ -90,8 +76,7 @@ r = model.fit(
 
 # save it as a h5 file
 
-model.save('model_vgg16.h5')
-
+model.save('model_vgg16_2.h5')
 
 # plotting training set and validation test 
 plt.plot(r.history['loss'])
@@ -100,21 +85,19 @@ plt.title('model loss')
 plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
+plt.savefig('TRAIN_VAL_1.png')
 plt.show()
-plt.savefig('TRAIN_VAL.png')
 
 # plot the loss
 plt.plot(r.history['loss'], label='train loss')
 plt.plot(r.history['val_loss'], label='val loss')
-plt.legend()
-plt.show()
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('LossVal_loss.png')
+plt.savefig('LossVal_loss_1.png')
+plt.show()
 
 # plot the accuracy
-plt.plot(r.history['acc'], label='train acc')
-plt.plot(r.history['val_acc'], label='val acc')
-plt.legend()
-plt.show()
+plt.plot(r.history['accuracy'], label='train acc')
+plt.plot(r.history['val_accuracy'], label='val acc')
 plt.legend(['train', 'test'], loc='upper left')
-plt.savefig('AccVal_acc.png')
+plt.savefig('AccVal_acc_1.png')
+plt.show()

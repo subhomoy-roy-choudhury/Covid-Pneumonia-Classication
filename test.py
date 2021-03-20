@@ -16,19 +16,14 @@ for i in name:
     dir1 = os.getcwd()
     dir2 = str(dir1) +'\Datasets'+'\\val'+f'\\{i}'
     dir_arr = os.listdir(dir2)
-    print(dir_arr)
+    # print(dir_arr)
     for test_image in dir_arr:
-        test_image = str(dir1) +'\Datasets'+'\\val'+f'\\{i}\\' + str(test_image)
-        img = image.load_img(test_image, target_size=(224,224))
+        test_image1 = str(dir1) +'\Datasets'+'\\val'+f'\\{i}\\' + str(test_image)
+        img = image.load_img(test_image1, target_size=(224,224))
         x = image.img_to_array(img)
         x= np.expand_dims(x, axis=0)
         img_data = preprocess_input(x)
-
         classes = model.predict(img_data)
-        class1 = classes[0]
-        for j in range(3):
-
-            if class1[j] == 1:
-                break
-        prediction = name[j]
-        print(prediction,classes)
+        y_pred=np.argmax(classes, axis=1)
+        prediction = name[y_pred[0]]
+        print(prediction,classes,test_image)
