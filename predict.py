@@ -54,5 +54,7 @@ print(accuracy_score(y_true, y_pred))
 
 cm = pd.DataFrame(data=confusion_matrix(y_true, y_pred, labels=[0, 1, 2]),index=["Actual Covid","Actual Normal", "Actual Pneumonia"],
 columns=["Predicted Covid","Predicted Normal", "Predicted Pneumonia"])
-sns_plot = sns.heatmap(cm,annot=True,fmt="d")
+sns_plot = sns.heatmap(cm,annot=True,fmt="d",annot_kws={'size': 15})
+plt.xticks(rotation=0)
+plt.yticks(fontsize = 8)
 sns_plot.figure.savefig("output.png")
