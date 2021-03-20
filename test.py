@@ -4,10 +4,13 @@ from keras.applications.vgg16 import preprocess_input
 from keras.preprocessing import image
 import numpy as np
 import os
+import matplotlib.pyplot as plt #For Visualization
+import pandas as pd             # For handling data
 
-model = load_model('model_vgg16.h5')
-name =['NORMAL','PNEUMONIA']
+model = load_model('model_vgg16_2.h5')
+name =['COVID','NORMAL','PNEUMONIA']
 
+# results
 for i in name:
     print(i)
     dir1 = os.getcwd()
@@ -22,4 +25,10 @@ for i in name:
         img_data = preprocess_input(x)
 
         classes = model.predict(img_data)
-        print(classes)
+        class1 = classes[0]
+        for j in range(3):
+
+            if class1[j] == 1:
+                break
+        prediction = name[j]
+        print(prediction,classes)
