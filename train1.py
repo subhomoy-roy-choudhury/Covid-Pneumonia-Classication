@@ -112,8 +112,8 @@ plt.legend(['train', 'test'], loc='upper left')
 plt.savefig('LossVal_loss.png')
 
 # plot the accuracy
-plt.plot(r.history['acc'], label='train acc')
-plt.plot(r.history['val_acc'], label='val acc')
+plt.plot(r.history['accuracy'], label='train acc')
+plt.plot(r.history['val_accuracy'], label='val acc')
 plt.legend()
 plt.show()
 plt.legend(['train', 'test'], loc='upper left')
